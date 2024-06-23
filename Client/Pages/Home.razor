@@ -10,10 +10,11 @@ Amalie drive å kødde rundt med ting i Azure
 <p>
 <button class="btn btn-primary" @onclick="IncrementCount">Test Azure Function</button>
 
-<p role="status">Tilfeldig utvalgt nummer frå Azure: @currentCount</p>
+<p role="status">Tilfeldig utvalgt nummer frå Azure: @number</p>
 </p>
 @code {
     private int currentCount = 0;
+    private int number = 0;
 
     private async Task IncrementCount()
     {
