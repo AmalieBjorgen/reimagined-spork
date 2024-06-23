@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Cryptography;
 using BlazorApp.Shared;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -18,7 +19,7 @@ namespace Api
         [Function("WeatherForecast")]
         public string Run([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequestData req)
         {
-            var randomNumber = new Random();
+            var randomNumber = RandomNumberGenerator.GetInt32(0, 1000);
 
             var result = randomNumber.ToString();
 
