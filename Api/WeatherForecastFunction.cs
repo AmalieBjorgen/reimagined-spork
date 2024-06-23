@@ -16,22 +16,16 @@ namespace Api
         }
 
         [Function("WeatherForecast")]
-        public HttpResponseData Run([HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequestData req)
+        public string Run([HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequestData req)
         {
             var randomNumber = new Random();
-            var temp = 0;
 
-            var result = Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = temp = randomNumber.Next(-20, 55),
-                Summary = GetSummary(temp)
-            }).ToArray();
+            var result = randomNumber.ToString();
 
             var response = req.CreateResponse(HttpStatusCode.OK);
             response.WriteAsJsonAsync(result);
 
-            return response;
+            return result;
         }
 
         private string GetSummary(int temp)

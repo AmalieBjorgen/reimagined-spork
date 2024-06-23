@@ -1,0 +1,93 @@
+﻿@page "/weather"
+@using System.Text.Json.Serialization
+
+<PageTitle>Temperaturoversikt</PageTitle>
+
+
+
+<p>Få temperaturen for din BKK lokasjon.</p>
+
+<button class="btn btn-primary" @onclick="Bergen">Bergen</button>
+<button class="btn btn-primary" @onclick="Førde">Førde</button>
+<button class="btn btn-primary" @onclick="Odda">Odda</button>
+
+@if (forecasts != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Tidspunkt</th>
+                <th>Temp. (C)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts.Properties.Timeseries)
+            {
+                <tr>
+                    <td>@forecast.Time.ToLocalTime()</td>
+                    <td>@forecast.Data.Instant.Details.AirTemperature</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private WeatherForecast? forecasts = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = null;
+    }
+
+    private async Task Bergen()
+    {
+        forecasts = await Location("60.391262", "5.322054");
+        StateHasChanged();
+    }
+    private async Task Førde()
+    {
+        forecasts = await Location("61.4546", "5.8573");
+        StateHasChanged();
+    }
+    private async Task Odda()
+    {
+        forecasts = await Location("60.0666", "6.5443");
+        StateHasChanged();
+    }
+
+    private async Task<WeatherForecast> Location(string lat, string lon)
+    {
+        var client = new HttpClient();
+        WeatherForecast forecasts = await client.GetFromJsonAsync<WeatherForecast>($"https://api.met.no/weatherapi/locationforecast/2.0/compact?lat={lat}&lon={lon}");
+        return forecasts;
+    }
+    private class WeatherForecast
+    {
+        public Properties Properties { get; set; }
+    }
+    private class Properties
+    {
+        public Timeseries[] Timeseries { get; set; }
+    }
+    private class Timeseries
+    {
+        public DateTime Time { get; set; }
+        public Data Data { get; set; }
+    }
+    private class Data
+    {
+        public Instant Instant { get; set; }
+    }
+    private class Instant
+    {
+        public Details Details { get; set; }
+    }
+
+    private class Details
+    {
+        [JsonPropertyName("air_temperature")]
+        public double AirTemperature { get; set; }
+    }
+}
+ 
